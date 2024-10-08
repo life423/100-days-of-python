@@ -1,30 +1,31 @@
-def get_direction() -> str:
-    full_directions = ["left", "right", "straight"]
-    directions: dict[str, str] = {direction: direction[0] for direction in full_directions}
+import pygame
 
-    while True:
-        try:
-            user_input = input("Which direction would you like to go? \n'left', 'right', 'straight', or 'quit' (or 'q') to exit: ")
-            if user_input in ["quit", "q"]:
-                print("You have exited the game.")
-                return "quit"
-            elif user_input in directions:
-                return directions[user_input]
-            else:
-                raise ValueError("Invalid input. Please enter 'left', 'right', 'straight', or 'quit'.")
-        except ValueError as e:
-            print(e)
+# Step 1: Initialize Pygame
+pygame.init()
 
+# Step 2: Set up the game window
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+SCREEN_TITLE = "Basic GUI with Pygame"
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption(SCREEN_TITLE)
 
-def handle_direction(direction: str) -> None:
-    if direction != "quit":
-        print(f"You chose direction: {direction}")
+# Set a background color (RGB)
+background_color = (135, 206, 235)  # Light blue color
 
+# Game loop to keep the window open
+running = True
+while running:
+    # Event handling to close the window
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-def main() -> None:
-    direction: str = get_direction()
-    handle_direction(direction)
+    # Fill the screen with the background color
+    screen.fill(background_color)
 
+    # Update the display to reflect any changes
+    pygame.display.flip()
 
-if __name__ == "__main__":
-    main()
+# Quit Pygame
+pygame.quit()
