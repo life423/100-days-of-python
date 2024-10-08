@@ -1,13 +1,10 @@
 def get_direction() -> str:
-    directions: dict[str, str] = {
-        "left": "l",
-        "right": "r",
-        "straight": "s"
-    }
+    full_directions = ["left", "right", "straight"]
+    directions: dict[str, str] = {direction: direction[0] for direction in full_directions}
 
     while True:
         try:
-            user_input = input("Which direction would you like to go? \n'left', 'right', 'straight', or 'quit' to exit: ")
+            user_input = input("Which direction would you like to go? \n'left', 'right', 'straight', or 'quit' (or 'q') to exit: ")
             if user_input in ["quit", "q"]:
                 print("You have exited the game.")
                 return "quit"
@@ -19,10 +16,14 @@ def get_direction() -> str:
             print(e)
 
 
-def main() -> None:
-    direction: str = get_direction()
+def handle_direction(direction: str) -> None:
     if direction != "quit":
         print(f"You chose direction: {direction}")
+
+
+def main() -> None:
+    direction: str = get_direction()
+    handle_direction(direction)
 
 
 if __name__ == "__main__":
