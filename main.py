@@ -30,17 +30,20 @@ def main() -> None:
 
     This function prompts the user for weight in pounds and height in feet and inches,
     converts the height to inches, calculates BMI using the imperial system, and prints the result.
+    If the user enters invalid input, they are prompted to try again.
     """
-    try:
-        weight: float = float(input("Enter your weight in pounds: "))
-        feet: int = int(input("Enter your height (feet): "))
-        inches: int = int(input("Enter your height (inches): "))
+    while True:
+        try:
+            weight: float = float(input("Enter your weight in pounds: "))
+            feet: int = int(input("Enter your height (feet): "))
+            inches: int = int(input("Enter your height (inches): "))
 
-        height: float = convert_height_to_inches(feet, inches)
-        bmi_imperial: float = bmi_calc_imperial(weight, height)
-        print(f"Here is your BMI: {bmi_imperial:.2f}")
-    except ValueError:
-        print("Invalid input. Please enter numeric values.")
+            height: float = convert_height_to_inches(feet, inches)
+            bmi_imperial: float = bmi_calc_imperial(weight, height)
+            print(f"Here is your BMI: {bmi_imperial:.2f}")
+            break
+        except ValueError:
+            print("Invalid input. Please enter numeric values.")
 
 if __name__ == "__main__":
     main()
