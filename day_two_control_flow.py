@@ -13,7 +13,7 @@ class Game:
 
         self.PLAYER_COLOR = (0, 102, 204)  # A shade of blue for the player
         self.PLAYER_SIZE = 50  # Size of the player square
-        self.PLAYER_STEP = 1  # Step size for the player's movement
+        self.PLAYER_STEP = 50  # Step size for the player's movement
 
         # Initialize Pygame and set up player position
         self.screen = self.initialize_pygame()
@@ -34,21 +34,23 @@ class Game:
 
     def handle_events(self) -> None:
         """
-        Listen for events such as quitting the game.
-        Updates the running state accordingly.
+        Listen for events such as quitting the game and player movement.
+        Updates the running state and player's position accordingly.
         """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+            elif event.type == pygame.KEYDOWN:
+                self.handle_player_movement(event.key)
 
-    def handle_player_movement(self, keys: pygame.key.ScancodeWrapper) -> None:
+    def handle_player_movement(self, key: int) -> None:
         """
         Update the player's position based on key presses.
         The player moves in steps, meaning the player moves a fixed distance each time a key is pressed.
         The movement is restricted to ensure the player does not move off-screen.
 
         Args:
-            keys (pygame.key.ScancodeWrapper): The state of all keys.
+            key (int): The key that was pressed.
         """
         # Dictionary to map keys to movement vectors
         movement_directions = {
@@ -62,14 +64,13 @@ class Game:
             pygame.K_s: (0, self.PLAYER_STEP)
         }
 
-        # Iterate through the movement dictionary to update player position
-        for key, (dx, dy) in movement_directions.items():
-            if keys[key]:
-                new_x = self.player_pos['x'] + dx
-                new_y = self.player_pos['y'] + dy
-                # Ensure the player does not move off-screen
-                self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
-                self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
+        if key in movement_directions:
+            dx, dy = movement_directions[key]
+            new_x = self.player_pos['x'] + dx
+            new_y = self.player_pos['y'] + dy
+            # Ensure the player does not move off-screen
+            self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
+            self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
 
     def draw_player(self) -> None:
         """
@@ -85,8 +86,6 @@ class Game:
         """
         while self.running:
             self.handle_events()
-            keys = pygame.key.get_pressed()
-            self.handle_player_movement(keys)
             self.screen.fill(self.BACKGROUND_COLOR)
             self.draw_player()
             pygame.display.flip()
