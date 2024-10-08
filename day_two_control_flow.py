@@ -13,20 +13,17 @@ class Game:
         self.PLAYER_SIZE = 100  # Increased size of the player square
 
         self.ENEMY_COLOR = (255, 69, 0)  # Orange-Red color for the enemy
-        self.ENEMY_SIZE = 75  # Size of the enemy square
+        self.ENEMY_SIZE = 100  # Size of the enemy square
         # Initialize Pygame and set up player position
         self.screen = self.initialize_pygame()
         self.SCREEN_WIDTH = self.screen.get_width()
         self.SCREEN_HEIGHT = self.screen.get_height()
-        self.ENEMY_SPEED = max(1, self.SCREEN_WIDTH // 200)  # Speed of enemy movement
+        self.ENEMY_SPEED = max(1, self.SCREEN_WIDTH // 500)  # Speed of enemy movement
         self.enemy_pos = {'x': 100, 'y': 300}  # Initial position of the enemy
         self.enemy_direction = 1  # Direction of enemy movement (1 for right, -1 for left)
-
-        # Initialize Pygame and set up player position
-        self.screen = self.initialize_pygame()
         self.SCREEN_WIDTH = self.screen.get_width()
         self.SCREEN_HEIGHT = self.screen.get_height()
-        self.PLAYER_STEP = self.SCREEN_WIDTH // 15  # Dynamic step size based on screen width
+        self.PLAYER_STEP = 5  # Dynamic step size based on screen width
         self.player_pos = {'x': self.SCREEN_WIDTH // 2, 'y': self.SCREEN_HEIGHT // 2}
         self.running = True
 
@@ -53,8 +50,35 @@ class Game:
             elif event.type == pygame.KEYDOWN:
                 if event.key in [pygame.K_ESCAPE, pygame.K_q]:
                     self.running = False
-                else:
-                    self.handle_player_movement(event.key)
+
+    def handle_player_movement_continuous(self, delta_time: float) -> None:
+        """
+        Continuously update the player's position based on pressed keys, taking into account the time elapsed to ensure smooth movement.
+        The movement is restricted to ensure the player does not move off-screen.
+
+        Args:
+            delta_time (float): The time elapsed between the previous and current frame.
+        """
+        
+        keys = pygame.key.get_pressed()
+        movement_directions = {
+            pygame.K_LEFT: (-self.PLAYER_STEP, 0),
+            pygame.K_a: (-self.PLAYER_STEP, 0),
+            pygame.K_RIGHT: (self.PLAYER_STEP, 0),
+            pygame.K_d: (self.PLAYER_STEP, 0),
+            pygame.K_UP: (0, -self.PLAYER_STEP),
+            pygame.K_w: (0, -self.PLAYER_STEP),
+            pygame.K_DOWN: (0, self.PLAYER_STEP),
+            pygame.K_s: (0, self.PLAYER_STEP)
+        }
+
+        for key, (dx, dy) in movement_directions.items():
+            if keys[key]:
+                new_x = self.player_pos['x'] + dx
+                new_y = self.player_pos['y'] + dy
+                # Ensure the player does not move off-screen
+                self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
+                self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
 
     def handle_player_movement(self, key: int) -> None:
         """
@@ -114,8 +138,11 @@ class Game:
         Main game loop that runs the game.
         Handles events, updates game state, and redraws the screen.
         """
+        clock = pygame.time.Clock()
         while self.running:
+            delta_time = clock.tick(60) / 1000.0  # Calculate delta time in seconds
             self.handle_events()
+            self.handle_player_movement_continuous(delta_time)
             self.update_enemy_position()
             self.screen.fill(self.BACKGROUND_COLOR)
             self.draw_player()
