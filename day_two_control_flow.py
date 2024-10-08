@@ -12,6 +12,16 @@ class Game:
         self.PLAYER_COLOR = (0, 102, 204)  # A shade of blue for the player
         self.PLAYER_SIZE = 100  # Increased size of the player square
 
+        self.ENEMY_COLOR = (255, 69, 0)  # Orange-Red color for the enemy
+        self.ENEMY_SIZE = 75  # Size of the enemy square
+        # Initialize Pygame and set up player position
+        self.screen = self.initialize_pygame()
+        self.SCREEN_WIDTH = self.screen.get_width()
+        self.SCREEN_HEIGHT = self.screen.get_height()
+        self.ENEMY_SPEED = max(1, self.SCREEN_WIDTH // 200)  # Speed of enemy movement
+        self.enemy_pos = {'x': 100, 'y': 300}  # Initial position of the enemy
+        self.enemy_direction = 1  # Direction of enemy movement (1 for right, -1 for left)
+
         # Initialize Pygame and set up player position
         self.screen = self.initialize_pygame()
         self.SCREEN_WIDTH = self.screen.get_width()
@@ -41,7 +51,7 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key in [pygame.K_ESCAPE, pygame.K_q]:
                     self.running = False
                 else:
                     self.handle_player_movement(event.key)
@@ -75,12 +85,29 @@ class Game:
             self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
             self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
 
+    def update_enemy_position(self) -> None:
+        """
+        Update the enemy's position, making it patrol back and forth horizontally.
+        The movement is restricted to ensure the enemy does not move off-screen.
+        """
+        self.enemy_pos['x'] += self.ENEMY_SPEED * self.enemy_direction
+        # Reverse direction if the enemy hits the edge of the screen
+        if self.enemy_pos['x'] <= 0 or self.enemy_pos['x'] + self.ENEMY_SIZE >= self.SCREEN_WIDTH:
+            self.enemy_direction *= -1
+
     def draw_player(self) -> None:
         """
         Draw the player at the current position on the screen.
         The player is represented as a rectangle.
         """
         pygame.draw.rect(self.screen, self.PLAYER_COLOR, (self.player_pos['x'], self.player_pos['y'], self.PLAYER_SIZE, self.PLAYER_SIZE))
+
+    def draw_enemy(self) -> None:
+        """
+        Draw the enemy at the current position on the screen.
+        The enemy is represented as a rectangle.
+        """
+        pygame.draw.rect(self.screen, self.ENEMY_COLOR, (self.enemy_pos['x'], self.enemy_pos['y'], self.ENEMY_SIZE, self.ENEMY_SIZE))
 
     def run(self) -> None:
         """
@@ -89,8 +116,10 @@ class Game:
         """
         while self.running:
             self.handle_events()
+            self.update_enemy_position()
             self.screen.fill(self.BACKGROUND_COLOR)
             self.draw_player()
+            self.draw_enemy()
             pygame.display.flip()
 
         pygame.quit()
