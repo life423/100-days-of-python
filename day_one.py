@@ -13,7 +13,7 @@ def bmi_calc_imperial(weight: float, height: float) -> float:
 
 def convert_height_to_inches(feet: int, inches: int) -> float:
     """
-    Convert height given in feet and inches to total inches.
+    Convert height given in feet and inches to total inche
 
     Args:
         feet (int): Height in feet.
