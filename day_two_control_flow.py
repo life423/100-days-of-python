@@ -13,7 +13,7 @@ class Game:
 
         self.PLAYER_COLOR = (0, 102, 204)  # A shade of blue for the player
         self.PLAYER_SIZE = 50  # Size of the player square
-        self.PLAYER_STEP = 10  # Step size for the player's movement
+        self.PLAYER_STEP = 1  # Step size for the player's movement
 
         # Initialize Pygame and set up player position
         self.screen = self.initialize_pygame()
@@ -50,14 +50,26 @@ class Game:
         Args:
             keys (pygame.key.ScancodeWrapper): The state of all keys.
         """
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.player_pos['x'] = max(0, self.player_pos['x'] - self.PLAYER_STEP)
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.player_pos['x'] = min(self.SCREEN_WIDTH - self.PLAYER_SIZE, self.player_pos['x'] + self.PLAYER_STEP)
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
-            self.player_pos['y'] = max(0, self.player_pos['y'] - self.PLAYER_STEP)
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            self.player_pos['y'] = min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, self.player_pos['y'] + self.PLAYER_STEP)
+        # Dictionary to map keys to movement vectors
+        movement_directions = {
+            pygame.K_LEFT: (-self.PLAYER_STEP, 0),
+            pygame.K_a: (-self.PLAYER_STEP, 0),
+            pygame.K_RIGHT: (self.PLAYER_STEP, 0),
+            pygame.K_d: (self.PLAYER_STEP, 0),
+            pygame.K_UP: (0, -self.PLAYER_STEP),
+            pygame.K_w: (0, -self.PLAYER_STEP),
+            pygame.K_DOWN: (0, self.PLAYER_STEP),
+            pygame.K_s: (0, self.PLAYER_STEP)
+        }
+
+        # Iterate through the movement dictionary to update player position
+        for key, (dx, dy) in movement_directions.items():
+            if keys[key]:
+                new_x = self.player_pos['x'] + dx
+                new_y = self.player_pos['y'] + dy
+                # Ensure the player does not move off-screen
+                self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
+                self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
 
     def draw_player(self) -> None:
         """
