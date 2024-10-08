@@ -1,155 +1,87 @@
-import pygame
+# Day 2 of 100 Days of Code: Advanced Control Flow Logic Showcase
 
-class Game:
-    def __init__(self) -> None:
-        """
-        Initialize the game, including Pygame and game variables like player position.
-        """
-        # Game configuration
-        self.SCREEN_TITLE = "2D Platformer - Player Movement"
-        self.BACKGROUND_COLOR = (135, 206, 235)  # Light blue color
+import random
 
-        self.PLAYER_COLOR = (0, 102, 204)  # A shade of blue for the player
-        self.PLAYER_SIZE = 100  # Increased size of the player square
+# A function that categorizes random numbers using advanced control flow logic
+def number_classification_game() -> None:
+    """
+    Classify numbers into multiple categories based on specific rules.
+    Showcases nested if-else, match-case, and ternary operator.
+    """
+    print("\nWelcome to the Number Classification Game!\n")
+    rounds = 5  # Number of rounds to generate random numbers
+    
+    for _ in range(rounds):
+        num = random.randint(-100, 100)
+        classification = ""
 
-        self.ENEMY_COLOR = (255, 69, 0)  # Orange-Red color for the enemy
-        self.ENEMY_SIZE = 100  # Size of the enemy square
-        # Initialize Pygame and set up player position
-        self.screen = self.initialize_pygame()
-        self.SCREEN_WIDTH = self.screen.get_width()
-        self.SCREEN_HEIGHT = self.screen.get_height()
-        self.ENEMY_SPEED = max(1, self.SCREEN_WIDTH // 500)  # Speed of enemy movement
-        self.enemy_pos = {'x': 100, 'y': 300}  # Initial position of the enemy
-        self.enemy_direction = 1  # Direction of enemy movement (1 for right, -1 for left)
-        self.SCREEN_WIDTH = self.screen.get_width()
-        self.SCREEN_HEIGHT = self.screen.get_height()
-        self.PLAYER_STEP = 5  # Dynamic step size based on screen width
-        self.player_pos = {'x': self.SCREEN_WIDTH // 2, 'y': self.SCREEN_HEIGHT // 2}
-        self.running = True
+        # Using nested if-else to determine if a number is positive, negative, or zero
+        if num > 0:
+            classification += "Positive "
+        elif num < 0:
+            classification += "Negative "
+        else:
+            classification += "Zero"
 
-    def initialize_pygame(self) -> pygame.Surface:
-        """
-        Initialize all imported Pygame modules and set up the display in fullscreen mode.
+        # Additional checks for even/odd using match-case
+        if num != 0:
+            match num % 2:
+                case 0:
+                    classification += "Even"
+                case 1:
+                    classification += "Odd"
+                case -1:
+                    classification += "Odd"
 
-        Returns:
-            pygame.Surface: The screen surface to draw on.
-        """
-        pygame.init()
-        screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        pygame.display.set_caption(self.SCREEN_TITLE)
-        return screen
+        # Prime number check using a custom function
+        if num > 1:
+            classification += " and Prime" if is_prime(num) else " and Not Prime"
 
-    def handle_events(self) -> None:
-        """
-        Listen for events such as quitting the game and player movement.
-        Updates the running state and player's position accordingly.
-        """
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key in [pygame.K_ESCAPE, pygame.K_q]:
-                    self.running = False
+        # Display results with conditional logic
+        action = "Celebrate!" if num == 42 else "Keep going..."
+        print(f"Number: {num} -> {classification}. {action}")
 
-    def handle_player_movement_continuous(self, delta_time: float) -> None:
-        """
-        Continuously update the player's position based on pressed keys, taking into account the time elapsed to ensure smooth movement.
-        The movement is restricted to ensure the player does not move off-screen.
+    print("\nGame over. Thanks for playing!\n")
 
-        Args:
-            delta_time (float): The time elapsed between the previous and current frame.
-        """
-        
-        keys = pygame.key.get_pressed()
-        movement_directions = {
-            pygame.K_LEFT: (-self.PLAYER_STEP, 0),
-            pygame.K_a: (-self.PLAYER_STEP, 0),
-            pygame.K_RIGHT: (self.PLAYER_STEP, 0),
-            pygame.K_d: (self.PLAYER_STEP, 0),
-            pygame.K_UP: (0, -self.PLAYER_STEP),
-            pygame.K_w: (0, -self.PLAYER_STEP),
-            pygame.K_DOWN: (0, self.PLAYER_STEP),
-            pygame.K_s: (0, self.PLAYER_STEP)
-        }
 
-        for key, (dx, dy) in movement_directions.items():
-            if keys[key]:
-                new_x = self.player_pos['x'] + dx
-                new_y = self.player_pos['y'] + dy
-                # Ensure the player does not move off-screen
-                self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
-                self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
+def is_prime(num: int) -> bool:
+    """
+    Determines if a number is prime.
 
-    def handle_player_movement(self, key: int) -> None:
-        """
-        Update the player's position based on key presses.
-        The player moves in steps, meaning the player moves a fixed distance each time a key is pressed.
-        The movement is restricted to ensure the player does not move off-screen.
+    Args:
+        num (int): The number to check.
 
-        Args:
-            key (int): The key that was pressed.
-        """
-        # Dictionary to map keys to movement vectors
-        movement_directions = {
-            pygame.K_LEFT: (-self.PLAYER_STEP, 0),
-            pygame.K_a: (-self.PLAYER_STEP, 0),
-            pygame.K_RIGHT: (self.PLAYER_STEP, 0),
-            pygame.K_d: (self.PLAYER_STEP, 0),
-            pygame.K_UP: (0, -self.PLAYER_STEP),
-            pygame.K_w: (0, -self.PLAYER_STEP),
-            pygame.K_DOWN: (0, self.PLAYER_STEP),
-            pygame.K_s: (0, self.PLAYER_STEP)
-        }
+    Returns:
+        bool: True if num is a prime number, False otherwise.
+    """
+    if num <= 1:
+        return False
+    for i in range(2, int(num ** 0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
 
-        if key in movement_directions:
-            dx, dy = movement_directions[key]
-            new_x = self.player_pos['x'] + dx
-            new_y = self.player_pos['y'] + dy
-            # Ensure the player does not move off-screen
-            self.player_pos['x'] = max(0, min(self.SCREEN_WIDTH - self.PLAYER_SIZE, new_x))
-            self.player_pos['y'] = max(0, min(self.SCREEN_HEIGHT - self.PLAYER_SIZE, new_y))
 
-    def update_enemy_position(self) -> None:
-        """
-        Update the enemy's position, making it patrol back and forth horizontally.
-        The movement is restricted to ensure the enemy does not move off-screen.
-        """
-        self.enemy_pos['x'] += self.ENEMY_SPEED * self.enemy_direction
-        # Reverse direction if the enemy hits the edge of the screen
-        if self.enemy_pos['x'] <= 0 or self.enemy_pos['x'] + self.ENEMY_SIZE >= self.SCREEN_WIDTH:
-            self.enemy_direction *= -1
+# Advanced control flow showcase with list comprehension and loop control
+def control_flow_list_logic() -> None:
+    """
+    Demonstrates complex control flow by applying advanced rules to a list of numbers.
+    """
+    random_numbers = [random.randint(1, 100) for _ in range(10)]
+    print("\nAdvanced List Logic:\n")
+    print(f"Original List: {random_numbers}\n")
 
-    def draw_player(self) -> None:
-        """
-        Draw the player at the current position on the screen.
-        The player is represented as a rectangle.
-        """
-        pygame.draw.rect(self.screen, self.PLAYER_COLOR, (self.player_pos['x'], self.player_pos['y'], self.PLAYER_SIZE, self.PLAYER_SIZE))
+    # Filter out even numbers, then square them if they're greater than 50, else cube them
+    transformed_numbers = [
+        (x ** 2 if x > 50 else x ** 3) if x % 2 == 0 else "Skipped"
+        for x in random_numbers
+    ]
+    
+    # Display the transformation
+    for idx, value in enumerate(transformed_numbers):
+        print(f"Index {idx}: {'Transformed' if value != 'Skipped' else 'Skipped'} -> {value}")
 
-    def draw_enemy(self) -> None:
-        """
-        Draw the enemy at the current position on the screen.
-        The enemy is represented as a rectangle.
-        """
-        pygame.draw.rect(self.screen, self.ENEMY_COLOR, (self.enemy_pos['x'], self.enemy_pos['y'], self.ENEMY_SIZE, self.ENEMY_SIZE))
-
-    def run(self) -> None:
-        """
-        Main game loop that runs the game.
-        Handles events, updates game state, and redraws the screen.
-        """
-        clock = pygame.time.Clock()
-        while self.running:
-            delta_time = clock.tick(60) / 1000.0  # Calculate delta time in seconds
-            self.handle_events()
-            self.handle_player_movement_continuous(delta_time)
-            self.update_enemy_position()
-            self.screen.fill(self.BACKGROUND_COLOR)
-            self.draw_player()
-            self.draw_enemy()
-            pygame.display.flip()
-
-        pygame.quit()
 
 if __name__ == "__main__":
-    Game().run()
+    number_classification_game()
+    control_flow_list_logic()
