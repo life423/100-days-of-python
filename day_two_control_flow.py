@@ -10,13 +10,13 @@ class Game:
         self.BACKGROUND_COLOR = (135, 206, 235)  # Light blue color
 
         self.PLAYER_COLOR = (0, 102, 204)  # A shade of blue for the player
-        self.PLAYER_SIZE = 50  # Size of the player square
-        self.PLAYER_STEP = 50  # Step size for the player's movement
+        self.PLAYER_SIZE = 100  # Increased size of the player square
 
         # Initialize Pygame and set up player position
         self.screen = self.initialize_pygame()
         self.SCREEN_WIDTH = self.screen.get_width()
         self.SCREEN_HEIGHT = self.screen.get_height()
+        self.PLAYER_STEP = self.SCREEN_WIDTH // 15  # Dynamic step size based on screen width
         self.player_pos = {'x': self.SCREEN_WIDTH // 2, 'y': self.SCREEN_HEIGHT // 2}
         self.running = True
 
@@ -96,5 +96,4 @@ class Game:
         pygame.quit()
 
 if __name__ == "__main__":
-    game = Game()
-    game.run()
+    Game().run()
