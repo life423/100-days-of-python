@@ -11,79 +11,76 @@ class Config:
     PLAYER_SIZE = 50  # Size of the player square
     PLAYER_STEP = 10  # Step size for the player's movement
 
-def initialize_pygame() -> pygame.Surface:
-    """
-    Initialize all imported Pygame modules and set up the display with specified width, height, and title.
+class Game:
+    def __init__(self) -> None:
+        """
+        Initialize the game, including Pygame and game variables like player position.
+        """
+        self.screen = self.initialize_pygame()
+        self.player_pos = {'x': Config.SCREEN_WIDTH // 2, 'y': Config.SCREEN_HEIGHT // 2}
+        self.running = True
 
-    Returns:
-        pygame.Surface: The screen surface to draw on.
-    """
-    pygame.init()
-    screen = pygame.display.set_mode((Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT))
-    pygame.display.set_caption(Config.SCREEN_TITLE)
-    return screen
+    def initialize_pygame(self) -> pygame.Surface:
+        """
+        Initialize all imported Pygame modules and set up the display with specified width, height, and title.
 
-def handle_player_movement(keys: pygame.key.ScancodeWrapper, player_pos: dict) -> None:
-    """
-    Update the player's position based on key presses.
-    The player moves in steps, meaning the player moves a fixed distance each time a key is pressed.
-    The movement is restricted to ensure the player does not move off-screen.
+        Returns:
+            pygame.Surface: The screen surface to draw on.
+        """
+        pygame.init()
+        screen = pygame.display.set_mode((Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT))
+        pygame.display.set_caption(Config.SCREEN_TITLE)
+        return screen
 
-    Args:
-        keys (pygame.key.ScancodeWrapper): The state of all keys.
-        player_pos (dict): The current position of the player.
-    """
-    if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-        player_pos['x'] = max(0, player_pos['x'] - Config.PLAYER_STEP)
-    if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-        player_pos['x'] = min(Config.SCREEN_WIDTH - Config.PLAYER_SIZE, player_pos['x'] + Config.PLAYER_STEP)
-    if keys[pygame.K_UP] or keys[pygame.K_w]:
-        player_pos['y'] = max(0, player_pos['y'] - Config.PLAYER_STEP)
-    if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-        player_pos['y'] = min(Config.SCREEN_HEIGHT - Config.PLAYER_SIZE, player_pos['y'] + Config.PLAYER_STEP)
+    def handle_events(self) -> None:
+        """
+        Listen for events such as quitting the game.
+        Updates the running state accordingly.
+        """
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
 
-def handle_events() -> bool:
-    """
-    Listen for events such as quitting the game.
-    Returns False if the user wants to quit, otherwise returns True to keep the game running.
+    def handle_player_movement(self, keys: pygame.key.ScancodeWrapper) -> None:
+        """
+        Update the player's position based on key presses.
+        The player moves in steps, meaning the player moves a fixed distance each time a key is pressed.
+        The movement is restricted to ensure the player does not move off-screen.
 
-    Returns:
-        bool: True if the game should continue running, False if it should quit.
-    """
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            return False
-    return True
+        Args:
+            keys (pygame.key.ScancodeWrapper): The state of all keys.
+        """
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            self.player_pos['x'] = max(0, self.player_pos['x'] - Config.PLAYER_STEP)
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            self.player_pos['x'] = min(Config.SCREEN_WIDTH - Config.PLAYER_SIZE, self.player_pos['x'] + Config.PLAYER_STEP)
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            self.player_pos['y'] = max(0, self.player_pos['y'] - Config.PLAYER_STEP)
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            self.player_pos['y'] = min(Config.SCREEN_HEIGHT - Config.PLAYER_SIZE, self.player_pos['y'] + Config.PLAYER_STEP)
 
-def draw_player(screen: pygame.Surface, player_pos: dict) -> None:
-    """
-    Draw the player at the current position on the screen.
-    The player is represented as a rectangle.
+    def draw_player(self) -> None:
+        """
+        Draw the player at the current position on the screen.
+        The player is represented as a rectangle.
+        """
+        pygame.draw.rect(self.screen, Config.PLAYER_COLOR, (self.player_pos['x'], self.player_pos['y'], Config.PLAYER_SIZE, Config.PLAYER_SIZE))
 
-    Args:
-        screen (pygame.Surface): The screen surface to draw on.
-        player_pos (dict): The current position of the player.
-    """
-    pygame.draw.rect(screen, Config.PLAYER_COLOR, (player_pos['x'], player_pos['y'], Config.PLAYER_SIZE, Config.PLAYER_SIZE))
+    def run(self) -> None:
+        """
+        Main game loop that runs the game.
+        Handles events, updates game state, and redraws the screen.
+        """
+        while self.running:
+            self.handle_events()
+            keys = pygame.key.get_pressed()
+            self.handle_player_movement(keys)
+            self.screen.fill(Config.BACKGROUND_COLOR)
+            self.draw_player()
+            pygame.display.flip()
 
-def main() -> None:
-    """
-    Main game loop that runs the game.
-    Initializes Pygame, sets up the player position, and keeps the game running until the user quits.
-    """
-    screen = initialize_pygame()
-    player_pos = {'x': Config.SCREEN_WIDTH // 2, 'y': Config.SCREEN_HEIGHT // 2}
-
-    running = True
-    while running:
-        running = handle_events()
-        keys = pygame.key.get_pressed()
-        handle_player_movement(keys, player_pos)
-        screen.fill(Config.BACKGROUND_COLOR)
-        draw_player(screen, player_pos)
-        pygame.display.flip()
-
-    pygame.quit()
+        pygame.quit()
 
 if __name__ == "__main__":
-    main()
+    game = Game()
+    game.run()
