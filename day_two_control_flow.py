@@ -6,8 +6,6 @@ class Game:
         Initialize the game, including Pygame and game variables like player position.
         """
         # Game configuration
-        self.SCREEN_WIDTH = 800
-        self.SCREEN_HEIGHT = 600
         self.SCREEN_TITLE = "2D Platformer - Player Movement"
         self.BACKGROUND_COLOR = (135, 206, 235)  # Light blue color
 
@@ -17,18 +15,20 @@ class Game:
 
         # Initialize Pygame and set up player position
         self.screen = self.initialize_pygame()
+        self.SCREEN_WIDTH = self.screen.get_width()
+        self.SCREEN_HEIGHT = self.screen.get_height()
         self.player_pos = {'x': self.SCREEN_WIDTH // 2, 'y': self.SCREEN_HEIGHT // 2}
         self.running = True
 
     def initialize_pygame(self) -> pygame.Surface:
         """
-        Initialize all imported Pygame modules and set up the display with specified width, height, and title.
+        Initialize all imported Pygame modules and set up the display in fullscreen mode.
 
         Returns:
             pygame.Surface: The screen surface to draw on.
         """
         pygame.init()
-        screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         pygame.display.set_caption(self.SCREEN_TITLE)
         return screen
 
@@ -41,7 +41,10 @@ class Game:
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.KEYDOWN:
-                self.handle_player_movement(event.key)
+                if event.key == pygame.K_ESCAPE:
+                    self.running = False
+                else:
+                    self.handle_player_movement(event.key)
 
     def handle_player_movement(self, key: int) -> None:
         """
