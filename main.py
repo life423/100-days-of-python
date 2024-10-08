@@ -34,12 +34,14 @@ def main() -> None:
     """
     while True:
         try:
-            weight: float = float(input("Enter your weight in pounds: "))
-            feet: int = int(input("Enter your height (feet): "))
-            inches: int = int(input("Enter your height (inches): "))
+            user_input = {
+                "weight": float(input("Enter your weight in pounds: ")),
+                "feet": int(input("Enter your height (feet): ")),
+                "inches": int(input("Enter your height (inches): "))
+            }
 
-            height: float = convert_height_to_inches(feet, inches)
-            bmi_imperial: float = bmi_calc_imperial(weight, height)
+            height: float = convert_height_to_inches(user_input["feet"], user_input["inches"])
+            bmi_imperial: float = bmi_calc_imperial(user_input["weight"], height)
             print(f"Here is your BMI: {bmi_imperial:.2f}")
             break
         except ValueError:
